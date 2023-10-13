@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>0.0.1</Version>
+		<Version>0.0.2</Version>
 		<Authors>Raypro</Authors>
 		<RootNamespace>Tgs.GameInterface.V8Poker.Client</RootNamespace>
 		<PackageId>Tgs.GameInterface.V8Poker.Client</PackageId>

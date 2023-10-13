@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddGameInterfaceGKXGamingClient(
+    public static IServiceCollection AddGameInterfaceV8PokerClient(
         this IServiceCollection services,
         Action<GameInterfaceV8PokerClientOptions, IServiceProvider> configure)
     {
