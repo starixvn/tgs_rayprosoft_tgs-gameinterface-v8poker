@@ -36,6 +36,6 @@ public class GameUrlGetService : IGetService<GameUrlQuery, string>
 
         uriBuilder.Query = queryItems.ToString();
 
-        return uriBuilder.ToString();
+        return HttpUtility.UrlDecode(uriBuilder.ToString());
     }
 }

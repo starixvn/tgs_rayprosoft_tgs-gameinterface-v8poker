@@ -17,7 +17,7 @@ public class GameUrlGetServiceUnitTest
             PlayerCode: "4ue0uj8cwn2v",
             IpAddress: "127.0.0.1",
             ExternalGameId: "0",
-            Lang: "en-us");
+            Lang: "en_us");
 
         var fakeClient = Substitute.For<IGameApiClient>();
 
@@ -32,7 +32,7 @@ public class GameUrlGetServiceUnitTest
             Arg.Is(query.BrandCode),
             Arg.Is(query.ExternalGameId),
             Arg.Any<CancellationToken>())
-            .Returns("https://wc-h5.orz16.com?account=71033_4ue0uj8cwn2v&token=eyJkYXRhIjoiNjAwNzNfNHVoM3BkbDBsY2lpIiwiY3JlYXRlZCI6MTY5NzA3Nzg2MywiZXhwIjozMDAsImFjY0xldmVsIjoiTFY1In0=.NYUG96iiOAfKinF/cZ7H03nIKt1+MI/TGfquo6BilPM=&lang=zh-cn&defaultSkin=[4]&route=wss://wc-wss.orz16.com&loudou=https://wc-loud.orz16.com/statisticsHandle&moneyType=1");
+            .Returns("https://wc-h5.xpvcd046.com/index.html?account=71033_4ue0uj8cwn2v&token=eyJkYXRhIjoiNzEwMzNfNHVlMHVqOGN3bjJ2IiwiY3JlYXRlZCI6MTY5NzE3NzUxMCwiZXhwIjozMDB9.kiC/YUrtK9cD8pPTL73q8G2ym6JK12ZvE8udIADrn8I=&route=wc-wss.xpvcd046.com&ld=https://wc-loud.xpvcd046.com/statisticsHandle&gameId=0&lang=vi_vn&extraParam=5d000001003500000000000000003d888a8693b62398eee1795f1a25e266c6716946a8d438f2e982d66b8c4186add90fbb7cc166dc4e88bf5d40996c4722b6fdaa4789ed9dc3abeffff4892c00");
 
         var service = new GameUrlGetService(
             fakeClient);
@@ -40,7 +40,7 @@ public class GameUrlGetServiceUnitTest
         var actual = await service.GetAsync(query: query);
 
         Assert.NotNull(actual);
-        Assert.Contains("lang=en-us", actual);
-        Assert.DoesNotContain("lang=zh-cn", actual);
+        Assert.Contains("lang=en_us", actual);
+        Assert.DoesNotContain("lang=vi_vn", actual);
     }
 }

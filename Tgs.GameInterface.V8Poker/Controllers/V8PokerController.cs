@@ -21,12 +21,12 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
-    ///             "playerCode":"4uh3pdl0lcii",
-    ///             "orderId": "60073202310120338068944uh3pdl0lcii"
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
+    ///             "playerCode":"4ue0uj8cwn2v",
+    ///             "orderId": "71033202310120338068944ue0uj8cwn2v"
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -64,12 +64,12 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
-    ///             "playerCode":"4uh3pdl0lcii",
-    ///             "orderId": "6007320202310120336009404uh3pdl0lcii",
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
+    ///             "playerCode":"4ue0uj8cwn2v",
+    ///             "orderId": "7103320202310120336009404ue0uj8cwn2v",
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -107,11 +107,11 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
-    ///             "orderId": "60073202310111727221424uh3pdl0lcii"
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
+    ///             "orderId": "71033202310111727221424ue0uj8cwn2v"
     ///         }
     /// </remarks>
     [HttpPost("fund/Status", Name = "FundStatus")]
@@ -143,10 +143,10 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": "https://wc-record.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
+    ///             "apiUrl": "https://wc-record.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
     ///             "startTime": "2023-07-26T11:50:00+08:00",
     ///             "endTime": "2023-07-26T12:00:00+08:00"
     ///         }
@@ -207,12 +207,12 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
     ///             "brandCode": "GPI_PHP",
-    ///             "playerCode":"4uh3pdl0lcii",
+    ///             "playerCode":"4ue0uj8cwn2v",
     ///             "ipAddress": "127.0.0.1",
     ///             "externalGameId": "0",
     ///             "lang": "en-us"
@@ -222,12 +222,12 @@ public class V8PokerController : ControllerBase
     ///     Post Baccarat
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
     ///             "brandCode": "GPI_PHP",
-    ///             "playerCode":"4uh3pdl0lcii",
+    ///             "playerCode":"4ue0uj8cwn2v",
     ///             "ipAddress": "127.0.0.1",
     ///             "externalGameId": "910",
     ///             "lang": "zh-cn"
@@ -267,11 +267,11 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
-    ///             "playerCode":"4uh3pdl0lcii"
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
+    ///             "playerCode":"4ue0uj8cwn2v"
     ///         }
     /// </remarks>
     [HttpPost("player/balance", Name = "PlayerBalance")]
@@ -310,11 +310,11 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073",
-    ///             "playerCode":"4uh3pdl0lcii"
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033",
+    ///             "playerCode":"4ue0uj8cwn2v"
     ///         }
     /// </remarks>
     [HttpPost("player/logout", Name = "PlayerLogout")]
@@ -347,10 +347,10 @@ public class V8PokerController : ControllerBase
     ///     Post
     ///
     ///         {
-    ///             "apiUrl": " https://wc-api.orz16.com/",
-    ///             "deskey": "03CFE0179704BCDF",
-    ///             "mD5key": "337B01054C6FA208",
-    ///             "agentId": "60073"
+    ///             "apiUrl": "https://wc-api.xpvcd046.com/",
+    ///             "deskey": "C6995933499B163B",
+    ///             "mD5key": "628DA8F1857A6529",
+    ///             "agentId": "71033"
     ///         }
     /// </remarks>
     [HttpPost("agent/balance", Name = "AgentBalance")]
