@@ -315,7 +315,7 @@ public class GameRecordUnitTest
             fakeSystemClock,
             fakeHttpClient);
 
-        _ = await Assert.ThrowsAsync<HttpRequestException>(
+        _ = await Assert.ThrowsAsync<MockHttpMatchException>(
             () => client
             .GameRecordAsync(
                 apiUrl: apiUrl,
