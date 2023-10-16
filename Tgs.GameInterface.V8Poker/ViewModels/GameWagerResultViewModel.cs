@@ -1,6 +1,6 @@
 ﻿namespace Tgs.GameInterface.V8Poker.ViewModels;
 
-public record GameRecordResultViewModel(
+public record GameWagerResultViewModel(
     string ExternalWagerId,
     string ExternalGameId,
     string PlayerCode,

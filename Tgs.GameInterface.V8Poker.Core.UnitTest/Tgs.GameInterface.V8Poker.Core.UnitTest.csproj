@@ -29,4 +29,12 @@
     <ProjectReference Include="..\Tgs.GameInterface.V8Poker.Core\Tgs.GameInterface.V8Poker.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\00.Git\game-v8poker\tgs-gameinterface-v8poker\Tgs.GameInterface.V8Poker.Core.UnitTest\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\00.Git\game-v8poker\tgs-gameinterface-v8poker\Tgs.GameInterface.V8Poker.Core.UnitTest\.editorconfig" />
+  </ItemGroup>
+
 </Project>

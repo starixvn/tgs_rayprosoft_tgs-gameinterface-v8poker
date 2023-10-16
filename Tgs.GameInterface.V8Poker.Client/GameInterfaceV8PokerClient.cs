@@ -119,17 +119,17 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameRecords = reply.Items
+        var infos = reply.Items
             ?? Enumerable.Empty<GameWagerInfo>();
 
-        if (!gameRecords.Any())
+        if (!infos.Any())
         {
             yield break;
         }
 
-        foreach (var gameRecord in gameRecords)
+        foreach (var info in infos)
         {
-            yield return gameRecord;
+            yield return info;
         }
     }
 

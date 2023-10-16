@@ -2,7 +2,7 @@
 
 namespace Tgs.GameInterface.V8Poker.ViewModels;
 
-public record GameRecordViewModel
+public record GameWagerViewModel
 {
     [Required]
     public Uri ApiUrl { get; init; } = default!;

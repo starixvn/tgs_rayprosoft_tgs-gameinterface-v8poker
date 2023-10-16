@@ -132,7 +132,7 @@ public class V8PokerController : ControllerBase
     }
 
     /// <summary>
-    /// Games the record asynchronous.
+    /// Games the wager asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
@@ -151,10 +151,10 @@ public class V8PokerController : ControllerBase
     ///             "endTime": "2023-07-26T12:00:00+08:00"
     ///         }
     /// </remarks>
-    [HttpPost("game/record")]
-    public async IAsyncEnumerable<GameRecordResultViewModel> GameRecordAsync(
+    [HttpPost("game/wager")]
+    public async IAsyncEnumerable<GameWagerResultViewModel> GameWagerAsync(
         [FromServices] IQueryService<GameWagerQuery, GameWagerResult> service,
-        GameRecordViewModel source)
+        GameWagerViewModel source)
     {
         var query = new GameWagerQuery(
             ApiUrl: source.ApiUrl,
@@ -180,7 +180,7 @@ public class V8PokerController : ControllerBase
 
         foreach (var result in results)
         {
-            yield return new GameRecordResultViewModel(
+            yield return new GameWagerResultViewModel(
                 ExternalWagerId: result.ExternalWagerId,
                 ExternalGameId: result.ExternalGameId,
                 PlayerCode: result.PlayerCode,
@@ -336,7 +336,7 @@ public class V8PokerController : ControllerBase
     }
 
     /// <summary>
-    /// Players the balance asynchronous.
+    /// Agents the balance asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
