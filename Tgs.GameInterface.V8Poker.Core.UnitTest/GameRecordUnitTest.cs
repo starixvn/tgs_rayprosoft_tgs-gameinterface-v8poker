@@ -475,4 +475,151 @@ public class GameRecordUnitTest
         Assert.Equal(71033, actual.First().ChannelID);
         Assert.Equal("71033_GPI", actual.First().LineCode);
     }
+
+    [Fact]
+    public async void TableID_Is_Long()
+    {
+        Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
+        var deskey = "C6995933499B163B";
+        var md5key = "628DA8F1857A6529";
+        var agentId = "71033";
+        var startTime = DateTimeOffset.Parse("2023-07-26T11:50:00+08:00");
+        var endTime = DateTimeOffset.Parse("2023-07-26T12:00:00+08:00");
+
+        var fakeCryptography = Substitute.For<IHashCryptography>();
+        var fakeSystemClock = Substitute.For<ISystemClock>();
+
+        var currentTime = DateTimeOffset.FromUnixTimeMilliseconds(1690343754287);
+        _ = fakeSystemClock.CurrentTime.Returns(currentTime);
+
+        var data = "s=6&startTime=1690343400000&endTime=1690344000000";
+        var param = "H5kLMUYwNlqbCtfaD/H4qyLglUI3Y41FMtJcy5EyW76A1DDk3BXpPlgKjnDo/XqdVHZOgPcUHBwewVlMD0cssg==";
+        _ = fakeCryptography.GetAesEncryptAsync(
+            data: Arg.Is(data),
+            secretKey: Arg.Is(deskey),
+            cancellationToken: Arg.Any<CancellationToken>())
+            .Returns(param);
+
+        var dataMD5 = $"{agentId}{currentTime.ToUnixTimeMilliseconds()}{md5key}";
+        var key = "4d6bcf79f2b72fe88d484e65e8606e94";
+        _ = fakeCryptography.GetHash(
+            data: Arg.Is(dataMD5))
+            .Returns(key);
+
+        var uriBuilder = new UriBuilder(new Uri(apiUrl, "/getRecordHandle"));
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        query["agent"] = agentId;
+        query["timestamp"] = currentTime.ToUnixTimeMilliseconds().ToString();
+        query["param"] = param;
+        query["key"] = key;
+        uriBuilder.Query = query.ToString();
+
+        var response = new JsonObject
+        {
+            ["m"] = "/getRecordHandle",
+            ["s"] = 106,
+            ["d"] = new JsonObject
+            {
+                ["code"] = 0,
+                ["start"] = 1697439840000,
+                ["end"] = 1697439900000,
+                ["count"] = 1,
+                ["list"] = new JsonObject
+                {
+                    ["GameID"] = new JsonArray {
+                        "50-1697439826-365567294-5"
+                    },
+                    ["Accounts"] = new JsonArray {
+                        "71033_4ul1vjm9pa2f"
+                    },
+                    ["ServerID"] = new JsonArray {
+                       83201
+                    },
+                    ["KindID"] = new JsonArray {
+                        8320
+                    },
+                    ["TableID"] = new JsonArray {
+                        16640200001
+                    },
+                    ["ChairID"] = new JsonArray {
+                        5
+                    },
+                    ["UserCount"] = new JsonArray {
+                        3
+                    },
+                    ["CellScore"] = new JsonArray {
+                        "0.00"
+                    },
+                    ["AllBet"] = new JsonArray {
+                        "0.00"
+                    },
+                    ["Profit"] = new JsonArray {
+                        "0.00"
+                    },
+                    ["Revenue"] = new JsonArray {
+                        "0.00"
+                    },
+                    ["GameStartTime"] = new JsonArray {
+                        "2023-10-16 15:03:47"
+                    },
+                    ["GameEndTime"] = new JsonArray {
+                        "2023-10-16 15:04:36"
+                    },
+                    ["CardValue"] = new JsonArray {
+                        "0233150a1125360800000000000000000112281d5"
+                    },
+                    ["ChannelID"] = new JsonArray {
+                       71033
+                    },
+                    ["LineCode"] = new JsonArray {
+                        "71033_GPI_PHP"
+                    }
+                }
+            }
+        };
+
+        var handler = new MockHttpMessageHandler();
+        _ = handler
+            .Expect(HttpMethod.Get, uriBuilder.ToString())
+            .Respond(HttpStatusCode.OK, new StringContent(response.ToJsonString(), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        var fakeHttpClient = handler.ToHttpClient();
+        var fakeLog = NullLogger<GameRecordApiClient>.Instance;
+
+        var client = new GameRecordApiClient(
+            fakeLog,
+            fakeCryptography,
+            fakeSystemClock,
+            fakeHttpClient);
+
+        var actual = await client
+            .GameRecordAsync(
+            apiUrl: apiUrl,
+            deskey: deskey,
+            md5key: md5key,
+            agentId: agentId,
+            startTime: startTime,
+            endTime: endTime,
+            retrySeconds: 1)
+            .ToArrayAsync();
+
+        Assert.NotNull(actual);
+        Assert.True(actual.Any());
+        Assert.Equal("50-1697439826-365567294-5", actual.First().GameID);
+        Assert.Equal("4ul1vjm9pa2f", actual.First().Account);
+        Assert.Equal(83201, actual.First().ServerID);
+        Assert.Equal(8320, actual.First().KindID);
+        Assert.Equal(16640200001, actual.First().TableID);
+        Assert.Equal(5, actual.First().ChairID);
+        Assert.Equal(3, actual.First().UserCount);
+        Assert.Equal(0.000m, actual.First().CellScore);
+        Assert.Equal(0.00m, actual.First().AllBet);
+        Assert.Equal(0.00m, actual.First().Profit);
+        Assert.Equal(0.00m, actual.First().Revenue);
+        Assert.Equal(DateTimeOffset.Parse("2023-10-16T15:03:47+08:00"), actual.First().GameStartTime);
+        Assert.Equal(DateTimeOffset.Parse("2023-10-16T15:04:36+08:00"), actual.First().GameEndTime);
+        Assert.Equal("0233150a1125360800000000000000000112281d5", actual.First().CardValue);
+        Assert.Equal(71033, actual.First().ChannelID);
+        Assert.Equal("71033_GPI_PHP", actual.First().LineCode);
+    }
 }

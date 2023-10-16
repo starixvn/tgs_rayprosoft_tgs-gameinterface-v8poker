@@ -5,7 +5,7 @@ public record GameRecordInfo(
     string Account,
     int ServerID,
     int KindID,
-    int TableID,
+    long TableID,
     int? ChairID,
     int UserCount,
     decimal CellScore,

@@ -78,7 +78,7 @@ internal class GameRecordApiClient : IGameRecordApiClient
         var accounts = list["Accounts"]!.AsArray().Select(x => x!.ToString());
         var serverIds = list["ServerID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
         var kindIds = list["KindID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
-        var tableIds = list["TableID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
+        var tableIds = list["TableID"]!.AsArray().Select(x => Convert.ToInt64(x!.ToString()));
         var chairIds = list["ChairID"]!.AsArray().Select(x => (Convert.IsDBNull(x)) ? (int?)null : Convert.ToInt32(x!.ToString()));
         var userCount = list["UserCount"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
         var cellScores = list["CellScore"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
