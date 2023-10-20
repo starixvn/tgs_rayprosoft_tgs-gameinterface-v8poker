@@ -67,7 +67,12 @@ builder.Services.AddSwaggerGen(c =>
     }
 });
 
-builder.Services.AddGameInterfaceCore();
+builder.Services.AddGameInterface(
+    (options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        configuration.GetSection("PolicySettings").Bind(options);
+    });
 
 builder.Services
     .AddOpenTelemetry()
@@ -76,6 +81,7 @@ builder.Services
             .AddEnvironmentVariableDetector())
         .AddSource("Tgs.*")
         .AddSource("TGS.*")
+        .AddSource("Valhalla.*")
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
         .AddGrpcClientInstrumentation()

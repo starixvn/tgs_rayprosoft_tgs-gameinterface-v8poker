@@ -4,8 +4,10 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Web;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using RichardSzalay.MockHttp;
+using Tgs.GameInterface.V8Poker.Core.Models;
 
 namespace Tgs.GameInterface.V8Poker.Core.UnitTest;
 
@@ -14,6 +16,14 @@ public class GameRecordUnitTest
     [Fact]
     public async void Normal_Process()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -139,20 +149,20 @@ public class GameRecordUnitTest
 
         var client = new GameRecordApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GameRecordAsync(
+        var actual = await client.GameRecordAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,
             agentId: agentId,
             startTime: startTime,
-            endTime: endTime,
-            retrySeconds: 1)
-            .ToArrayAsync();
+            endTime: endTime)
+            .ToArrayAsync()
+            ?? Enumerable.Empty<GameRecordInfo>();
 
         Assert.NotNull(actual);
         Assert.True(actual.Any());
@@ -177,6 +187,14 @@ public class GameRecordUnitTest
     [Fact]
     public async void Data_Does_Not_Exist_Code_16()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -234,20 +252,20 @@ public class GameRecordUnitTest
 
         var client = new GameRecordApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GameRecordAsync(
+        var actual = await client.GameRecordAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,
             agentId: agentId,
             startTime: startTime,
-            endTime: endTime,
-            retrySeconds: 1)
-            .ToArrayAsync();
+            endTime: endTime)
+            .ToArrayAsync()
+            ?? Enumerable.Empty<GameRecordInfo>();
 
         Assert.NotNull(actual);
         Assert.False(actual.Any());
@@ -256,6 +274,14 @@ public class GameRecordUnitTest
     [Fact]
     public async void Pulling_Orders_Too_Frequently_Coode_43()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -311,20 +337,19 @@ public class GameRecordUnitTest
 
         var client = new GameRecordApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
         _ = await Assert.ThrowsAsync<MockHttpMatchException>(
-            () => client
-            .GameRecordAsync(
+            () => client.GameRecordAsync(
                 apiUrl: apiUrl,
                 deskey: deskey,
                 md5key: md5key,
                 agentId: agentId,
                 startTime: startTime,
-                endTime: endTime,
-                retrySeconds: 1)
+                endTime: endTime)
             .ToArrayAsync()
             .AsTask());
     }
@@ -332,6 +357,14 @@ public class GameRecordUnitTest
     [Fact]
     public async void Fishing()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -441,20 +474,20 @@ public class GameRecordUnitTest
 
         var client = new GameRecordApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GameRecordAsync(
+        var actual = await client.GameRecordAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,
             agentId: agentId,
             startTime: startTime,
-            endTime: endTime,
-            retrySeconds: 1)
-            .ToArrayAsync();
+            endTime: endTime)
+            .ToArrayAsync()
+            ?? Enumerable.Empty<GameRecordInfo>();
 
         Assert.NotNull(actual);
         Assert.True(actual.Any());
@@ -479,6 +512,14 @@ public class GameRecordUnitTest
     [Fact]
     public async void TableID_Is_Long()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-record.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -588,20 +629,20 @@ public class GameRecordUnitTest
 
         var client = new GameRecordApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GameRecordAsync(
+        var actual = await client.GameRecordAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,
             agentId: agentId,
             startTime: startTime,
-            endTime: endTime,
-            retrySeconds: 1)
-            .ToArrayAsync();
+            endTime: endTime)
+            .ToArrayAsync()
+            ?? Enumerable.Empty<GameRecordInfo>();
 
         Assert.NotNull(actual);
         Assert.True(actual.Any());

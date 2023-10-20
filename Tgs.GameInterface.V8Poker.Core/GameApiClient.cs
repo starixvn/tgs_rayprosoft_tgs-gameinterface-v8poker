@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Polly;
 using Tgs.GameInterface.V8Poker.Core.Exceptions;
 using Tgs.GameInterface.V8Poker.Core.Extensions;
 using Tgs.GameInterface.V8Poker.Core.Models;
@@ -12,17 +14,20 @@ namespace Tgs.GameInterface.V8Poker.Core;
 internal class GameApiClient : IGameApiClient
 {
     private readonly ILogger<GameApiClient> _logger;
+    private readonly PolicySettingsOptions _policySettingsOptions;
     private readonly IHashCryptography _cryptography;
     private readonly ISystemClock _systemClock;
     private readonly HttpClient _client;
 
     public GameApiClient(
         ILogger<GameApiClient> logger,
+        IOptions<PolicySettingsOptions> options,
         IHashCryptography cryptography,
         ISystemClock systemClock,
         HttpClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _policySettingsOptions = options.Value;
         _cryptography = cryptography ?? throw new ArgumentNullException(nameof(cryptography));
         _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -52,14 +57,28 @@ internal class GameApiClient : IGameApiClient
     public async ValueTask<DepositResp> DepositAsync(Uri apiUrl, string deskey, string md5key, string agentId, string account, string orderId, decimal money, CancellationToken cancellationToken = default)
     {
         var data = $"s=2&account={account}&money={money}&orderid={orderId}";
-        var jsonNode = await GetAsync(
-            apiUrl: apiUrl,
-            logPrefix: "Deposit",
-            deskey: deskey,
-            md5key: md5key,
-            agentId: agentId,
-            data: data,
-            cancellationToken: cancellationToken)
+
+        var retryPolicy = Policy
+            .HandleResult<JsonNode>(jsonNode => jsonNode["d"]!["code"]!.GetValue<int>() == 39)
+            .WaitAndRetryAsync(
+            retryCount: _policySettingsOptions.DepositRetryCount,
+            retryAttempt => TimeSpan.FromSeconds(_policySettingsOptions.DepositRetryWaitSec),
+            onRetry: (response, retryTime, context) =>
+            {
+                _logger.LogWarning("LogOn:{logOn} | Message:禁止同一帳號登入帶分、上分、下分並發請求，後一個請求被拒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString());
+            });
+
+        var jsonNode = await retryPolicy
+            .ExecuteAsync(
+            async () => await GetAsync(
+                apiUrl: apiUrl,
+                logPrefix: "Deposit",
+                deskey: deskey,
+                md5key: md5key,
+                agentId: agentId,
+                data: data,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false))
             .ConfigureAwait(false);
 
         var dataResponse = jsonNode["d"]!;

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Web;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using RichardSzalay.MockHttp;
 
@@ -14,6 +15,14 @@ public class OrderStatusUnitTest
     [Fact]
     public async void Normal_Process()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-api.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -70,12 +79,12 @@ public class OrderStatusUnitTest
 
         var client = new GameApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GetOrderAsync(
+        var actual = await client.GetOrderAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,
@@ -88,6 +97,14 @@ public class OrderStatusUnitTest
     [Fact]
     public async void Order_Does_Not_Exist()
     {
+        var policySettingsOptions = Options.Create(new PolicySettingsOptions
+        {
+            DepositRetryCount = 1,
+            DepositRetryWaitSec = 1,
+            GameRecordRetryCount = 1,
+            GameRecordRetryWaitSec = 1
+        });
+
         Uri apiUrl = new Uri("https://wc-api.xpvcd046.com/");
         var deskey = "C6995933499B163B";
         var md5key = "628DA8F1857A6529";
@@ -144,12 +161,12 @@ public class OrderStatusUnitTest
 
         var client = new GameApiClient(
             fakeLog,
+            policySettingsOptions,
             fakeCryptography,
             fakeSystemClock,
             fakeHttpClient);
 
-        var actual = await client
-            .GetOrderAsync(
+        var actual = await client.GetOrderAsync(
             apiUrl: apiUrl,
             deskey: deskey,
             md5key: md5key,

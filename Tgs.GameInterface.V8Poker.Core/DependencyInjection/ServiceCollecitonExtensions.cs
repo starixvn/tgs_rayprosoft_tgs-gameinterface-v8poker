@@ -6,8 +6,12 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollecitonExtensions
 {
     public static IServiceCollection AddGameInterfaceCore(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        Action<PolicySettingsOptions, IServiceProvider> policySettingsOptions)
         => services
+        .AddOptions<PolicySettingsOptions>()
+        .Configure(policySettingsOptions)
+        .Services
         .RegisterAllServiceUtilityTypes(
             Assembly.GetExecutingAssembly(),
             ServiceLifetime.Transient)

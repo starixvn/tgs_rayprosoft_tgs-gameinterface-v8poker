@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Tgs.GameInterface.V8Poker.Core.Exceptions;
 using Tgs.GameInterface.V8Poker.Core.Extensions;
@@ -14,29 +15,32 @@ namespace Tgs.GameInterface.V8Poker.Core;
 internal class GameRecordApiClient : IGameRecordApiClient
 {
     private readonly ILogger<GameRecordApiClient> _logger;
+    private readonly PolicySettingsOptions _policySettingsOptions;
     private readonly IHashCryptography _cryptography;
     private readonly ISystemClock _systemClock;
     private readonly HttpClient _client;
 
     public GameRecordApiClient(
         ILogger<GameRecordApiClient> logger,
+        IOptions<PolicySettingsOptions> options,
         IHashCryptography cryptography,
         ISystemClock systemClock,
         HttpClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _policySettingsOptions = options.Value;
         _cryptography = cryptography ?? throw new ArgumentNullException(nameof(cryptography));
         _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async IAsyncEnumerable<GameRecordInfo> GameRecordAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, int retrySeconds, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<GameRecordInfo> GameRecordAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var retryPolicy = Policy
             .HandleResult<JsonNode>(jsonNode => jsonNode["d"]!["code"]!.GetValue<int>() == 43)
             .WaitAndRetryAsync(
-            retryCount: 1,
-            retryAttempt => TimeSpan.FromSeconds(retrySeconds),
+            retryCount: _policySettingsOptions.GameRecordRetryCount,
+            retryAttempt => TimeSpan.FromSeconds(_policySettingsOptions.GameRecordRetryWaitSec),
             onRetry: (response, retryTime, context) =>
             {
                 _logger.LogWarning("LogOn:{logOn} | Message:拉單過於頻繁(兩次拉單時間間隔必須大於 10 秒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString());
