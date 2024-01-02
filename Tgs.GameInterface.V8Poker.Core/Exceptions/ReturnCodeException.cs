@@ -1,11 +1,7 @@
 ﻿namespace Tgs.GameInterface.V8Poker.Core.Exceptions;
 
-public class ReturnCodeException : Exception
+public class ReturnCodeException(int code) : Exception(ConvertErrorMesaage(code))
 {
-    public ReturnCodeException(int code) : base(ConvertErrorMesaage(code))
-    {
-    }
-
     private static string ConvertErrorMesaage(int code) => code switch
     {
         -1 => "上下分時資料庫異常回滾",

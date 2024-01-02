@@ -59,8 +59,8 @@ push-nuget:
   only:
     - main
   script:
-    - dotnet pack -c $BuildConfiguration "Tgs.GameInterface.V8Poker.Client/Tgs.GameInterface.V8Poker.Client.csproj" --no-build --no-restore
-    - dotnet nuget push "Tgs.GameInterface.V8Poker.Client/bin/$BuildConfiguration/*.nupkg" --source "raypro-baget" -k $NugetApiKey --skip-duplicate
+    - dotnet pack -c $BuildConfiguration "Tgs.GameInterface.V8Poker.Client/Tgs.GameInterface.V8Poker.Client.csproj" --no-restore
+    - dotnet nuget push "Tgs.GameInterface.V8Poker.Client/bin/$BuildConfiguration/*.nupkg" -s "raypro-baget" -k $NugetApiKey --skip-duplicate
   artifacts:
     name: Nuget
     untracked: false
@@ -80,7 +80,13 @@ push-docker-image:
     untracked: true   
     policy: pull
   script:
-    - dotnet build "Tgs.GameInterface.V8Poker/Tgs.GameInterface.V8Poker.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
+    #- dotnet build "Tgs.GameInterface.V8Poker/Tgs.GameInterface.V8Poker.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
+    - dotnet publish "Tgs.GameInterface.V8Poker" 
+       --os linux --arch x64
+       /t:PublishContainer
+       -c $BuildConfiguration
+       /p:ContainerRepository=$ImageName
+       /p:ContainerImageTag=$Tag
     - docker push $ImageName:$Tag
 
 push-k8s-template:

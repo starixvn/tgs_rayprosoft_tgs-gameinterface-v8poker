@@ -4,21 +4,14 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.V8Poker.Core.ApplicationServices;
 
-internal class GameWagerQueryService : IQueryService<GameWagerQuery, GameWagerResult>
+internal class GameWagerQueryService(
+    IGameRecordApiClient client) : IQueryService<GameWagerQuery, GameWagerResult>
 {
-    private readonly IGameRecordApiClient _client;
-
-    public GameWagerQueryService(
-        IGameRecordApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async IAsyncEnumerable<GameWagerResult> QueryAsync(
         GameWagerQuery query,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var gameRecords = await _client
+        var gameRecords = await client
             .GameRecordAsync(
             apiUrl: query.ApiUrl,
             deskey: query.Deskey,

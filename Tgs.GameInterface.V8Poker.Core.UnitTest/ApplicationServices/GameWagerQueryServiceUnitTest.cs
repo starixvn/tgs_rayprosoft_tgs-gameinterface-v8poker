@@ -22,7 +22,7 @@ public class GameWagerQueryServiceUnitTest
 
         var infos = new GameRecordInfo[]
         {
-            new GameRecordInfo(
+            new(
                 GameID: "50-1690343439-360242142-4",
                 Account: "4ue0uj8cwn2v",
                 ServerID: 9101,
@@ -109,7 +109,7 @@ public class GameWagerQueryServiceUnitTest
 
         var infos = new GameRecordInfo[]
         {
-            new GameRecordInfo(
+            new(
                 GameID: "686-1689584140-15524700-1",
                 Account: "4ue0uj8cwn2v",
                 ServerID: 9101,
@@ -196,7 +196,7 @@ public class GameWagerQueryServiceUnitTest
 
         var infos = new GameRecordInfo[]
         {
-            new GameRecordInfo(
+            new(
                 GameID: "50-1690343466-360242382-3",
                 Account: "4ue0uj8cwn2v",
                 ServerID: 9101,
@@ -283,7 +283,7 @@ public class GameWagerQueryServiceUnitTest
 
         var infos = new GameRecordInfo[]
         {
-            new GameRecordInfo(
+            new(
                 GameID: "686-1689653000-19588758-1",
                 Account: "4ue0uj8cwn2v",
                 ServerID: 9101,

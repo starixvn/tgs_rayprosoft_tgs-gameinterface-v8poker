@@ -12,27 +12,14 @@ using Tgs.GameInterface.V8Poker.Core.Models;
 
 namespace Tgs.GameInterface.V8Poker.Core;
 
-internal class GameRecordApiClient : IGameRecordApiClient
+internal class GameRecordApiClient(
+    ILogger<GameRecordApiClient> logger,
+    IOptions<PolicySettingsOptions> options,
+    IHashCryptography cryptography,
+    ISystemClock systemClock,
+    HttpClient client) : IGameRecordApiClient
 {
-    private readonly ILogger<GameRecordApiClient> _logger;
-    private readonly PolicySettingsOptions _policySettingsOptions;
-    private readonly IHashCryptography _cryptography;
-    private readonly ISystemClock _systemClock;
-    private readonly HttpClient _client;
-
-    public GameRecordApiClient(
-        ILogger<GameRecordApiClient> logger,
-        IOptions<PolicySettingsOptions> options,
-        IHashCryptography cryptography,
-        ISystemClock systemClock,
-        HttpClient client)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _policySettingsOptions = options.Value;
-        _cryptography = cryptography ?? throw new ArgumentNullException(nameof(cryptography));
-        _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
+    private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
 
     public async IAsyncEnumerable<GameRecordInfo> GameRecordAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -43,7 +30,7 @@ internal class GameRecordApiClient : IGameRecordApiClient
             retryAttempt => TimeSpan.FromSeconds(_policySettingsOptions.GameRecordRetryWaitSec),
             onRetry: (response, retryTime, context) =>
             {
-                _logger.LogWarning("LogOn:{logOn} | Message:拉單過於頻繁(兩次拉單時間間隔必須大於 10 秒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString());
+                logger.LogWarning("LogOn:{logOn} | Message:拉單過於頻繁(兩次拉單時間間隔必須大於 10 秒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString());
             });
 
         var data = $"s=6&startTime={startTime.ToUnixTimeMilliseconds()}&endTime={endTime.ToUnixTimeMilliseconds()}";
@@ -138,25 +125,25 @@ internal class GameRecordApiClient : IGameRecordApiClient
 
     private async ValueTask<JsonNode> GetAsync(Uri apiUrl, string logPrefix, string deskey, string md5key, string agentId, string data, CancellationToken cancellationToken = default)
     {
-        var timestamp = _systemClock.CurrentTime.ToUnixTimeMilliseconds();
+        var timestamp = systemClock.CurrentTime.ToUnixTimeMilliseconds();
         var uriBuilder = new UriBuilder(new Uri(apiUrl, "/getRecordHandle"));
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         query["agent"] = agentId;
         query["timestamp"] = timestamp.ToString();
-        query["param"] = await _cryptography
+        query["param"] = await cryptography
             .GetAesEncryptAsync(
             data: data,
             secretKey: deskey,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
-        query["key"] = _cryptography.GetHash($"{agentId}{timestamp}{md5key}");
+        query["key"] = cryptography.GetHash($"{agentId}{timestamp}{md5key}");
         uriBuilder.Query = query.ToString();
 
         logPrefix = $"{nameof(GameApiClient)}.{logPrefix}";
 
         var sw = Stopwatch.StartNew();
 
-        var httpResponseMessage = await _client
+        var httpResponseMessage = await client
             .GetAsync(
                 requestUri: uriBuilder.ToString(),
                 cancellationToken: cancellationToken)
@@ -188,7 +175,7 @@ internal class GameRecordApiClient : IGameRecordApiClient
             RecordedOn = DateTimeOffset.UtcNow
         };
 
-        _logger.LogInformation("{logEvent}", JsonSerializer.Serialize(logEvent));
+        logger.LogInformation("{logEvent}", JsonSerializer.Serialize(logEvent));
 
         _ = httpResponseMessage.EnsureSuccessStatusCode();
 

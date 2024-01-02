@@ -4,15 +4,9 @@ using Tgs.GameInterface.V8Poker.Protos;
 
 namespace Tgs.GameInterface.V8Poker.Client;
 
-internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
+internal class GameInterfaceV8PokerClient(
+    GameInterfaceV8Poker.GameInterfaceV8PokerClient client) : IGameInterfaceV8PokerClient
 {
-    private readonly GameInterfaceV8Poker.GameInterfaceV8PokerClient _client;
-
-    public GameInterfaceV8PokerClient(GameInterfaceV8Poker.GameInterfaceV8PokerClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<AgentBalanceReply> AgentBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, CancellationToken cancellationToken = default)
     {
         var request = new AgentBalanceRequest
@@ -23,7 +17,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             AgentId = agentId
         };
 
-        return await _client.AgentBalanceAsync(
+        return await client.AgentBalanceAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -36,7 +30,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             MachineName = machineName,
         };
 
-        var reply = await _client
+        var reply = await client
             .CheckingServiceAsync(
                 request: request,
                 cancellationToken: cancellationToken)
@@ -58,7 +52,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             Amount = amount
         };
 
-        return await _client.FundInAsync(
+        return await client.FundInAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -77,7 +71,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             Amount = amount
         };
 
-        return await _client.FundOutAsync(
+        return await client.FundOutAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -94,7 +88,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             OrderId = orderId,
         };
 
-        var reply = await _client.FundStatusAsync(
+        var reply = await client.FundStatusAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -114,7 +108,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             EndTime = endTime.ToTimestamp()
         };
 
-        var reply = await _client.GameWagerAsync(
+        var reply = await client.GameWagerAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -148,7 +142,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             Lang = lang
         };
 
-        var reply = await _client.GameUrlAsync(
+        var reply = await client.GameUrlAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -167,7 +161,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             PlayerCode = playerCode
         };
 
-        return await _client.PlayerBalanceAsync(
+        return await client.PlayerBalanceAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -184,7 +178,7 @@ internal class GameInterfaceV8PokerClient : IGameInterfaceV8PokerClient
             PlayerCode = playerCode
         };
 
-        _ = await _client.PlayerLogoutAsync(
+        _ = await client.PlayerLogoutAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);

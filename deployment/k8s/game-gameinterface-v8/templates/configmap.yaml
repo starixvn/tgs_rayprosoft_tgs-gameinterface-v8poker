@@ -19,12 +19,13 @@ data:
           "Protocols": "Http2"
         },
         "Endpoints": {
-          "HealthCheck": {
-            "Url": "http://*:{{ .Values.service.port }}",
+          "Http": {
+            "Url": "http://*:{{ .Values.service.targetPort }}",
             "Protocols": "Http1"
           },
           "Grpc": {
-            "Url": "http://*:{{ .Values.servicegrpc.port }}"
+            "Url": "http://*:{{ .Values.service.grpc.targetPort }}",
+            "Protocols": "Http2"
           }
         }
       }

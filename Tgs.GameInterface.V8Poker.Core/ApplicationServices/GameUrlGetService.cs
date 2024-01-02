@@ -3,20 +3,14 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.V8Poker.Core.ApplicationServices;
 
-public class GameUrlGetService : IGetService<GameUrlQuery, string>
+public class GameUrlGetService(
+    IGameApiClient client) : IGetService<GameUrlQuery, string>
 {
-    private readonly IGameApiClient _client;
-
-    public GameUrlGetService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<string> GetAsync(
         GameUrlQuery query,
         CancellationToken cancellationToken = default)
     {
-        var url = await _client.LoginAsync(
+        var url = await client.LoginAsync(
             apiUrl: query.ApiUrl,
             deskey: query.Deskey,
             md5key: query.MD5key,

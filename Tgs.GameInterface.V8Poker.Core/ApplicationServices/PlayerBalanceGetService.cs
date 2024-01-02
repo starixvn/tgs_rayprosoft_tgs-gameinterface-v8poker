@@ -2,20 +2,14 @@
 
 namespace Tgs.GameInterface.V8Poker.Core.ApplicationServices;
 
-public class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
+public class PlayerBalanceGetService(
+    IGameApiClient client) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
-    private readonly IGameApiClient _client;
-
-    public PlayerBalanceGetService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<PlayerBalanceResult> GetAsync(
         PlayerBalanceQuery query,
         CancellationToken cancellationToken = default)
     {
-        var info = await _client
+        var info = await client
             .BalanceAsync(
             apiUrl: query.ApiUrl,
             deskey: query.Deskey,

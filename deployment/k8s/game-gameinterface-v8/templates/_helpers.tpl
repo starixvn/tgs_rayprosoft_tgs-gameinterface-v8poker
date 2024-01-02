@@ -47,7 +47,6 @@ Selector labels
 */}}
 {{- define "game-gameinterface-v8.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "game-gameinterface-v8.name" . }}
-app.kubernetes.io/instance: RELEASE-NAME
 app: {{ include "game-gameinterface-v8.name" . }}
 tgs.kind: game
 tgs.game.kind: gameinterface

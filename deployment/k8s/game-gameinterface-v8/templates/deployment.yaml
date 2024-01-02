@@ -4,8 +4,6 @@ metadata:
   name: {{ include "game-gameinterface-v8.fullname" . }}
   labels:
     {{- include "game-gameinterface-v8.labels" . | nindent 4 }}
-  annotations:
-    reloader.stakater.com/auto: "true"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -20,7 +18,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "game-gameinterface-v8.selectorLabels" . | nindent 8 }}
+        {{- include "game-gameinterface-v8.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -42,28 +43,34 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: RELEASE_NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: POD_IP
+              valueFrom:
+               fieldRef:
+                fieldPath: status.podIP 
           volumeMounts:
-            - mountPath: /config/appsettings.json
+            - mountPath: /app/appsettings.Production.json
               name: appsettings
               readOnly: true
               subPath: appsettings.json
           ports:
-            - name: grpc
-              containerPort:  {{ .Values.servicegrpc.port }}
-              protocol: TCP
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+            - name: grpc
+              containerPort:  {{ .Values.service.grpc.targetPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port:  {{ .Values.service.port }}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+              port: http
+            failureThreshold: 5
+            periodSeconds: 60
           startupProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.service.port }}
+              port: http
             failureThreshold: 30
             periodSeconds: 2
           resources:
