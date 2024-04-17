@@ -13,174 +13,169 @@ using Tgs.GameInterface.V8Poker.Core.Models;
 namespace Tgs.GameInterface.V8Poker.Core;
 
 internal class GameRecordApiClient(
-    ILogger<GameRecordApiClient> logger,
-    IOptions<PolicySettingsOptions> options,
-    IHashCryptography cryptography,
-    ISystemClock systemClock,
-    HttpClient client) : IGameRecordApiClient
+	ILogger<GameRecordApiClient> logger,
+	IOptions<PolicySettingsOptions> options,
+	IHashCryptography cryptography,
+	ISystemClock systemClock,
+	HttpClient client) : IGameRecordApiClient
 {
-    private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
+	private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
 
-    public async IAsyncEnumerable<GameRecordInfo> GameRecordAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        var retryPolicy = Policy
-            .HandleResult<JsonNode>(jsonNode => jsonNode["d"]!["code"]!.GetValue<int>() == 43)
-            .WaitAndRetryAsync(
-            retryCount: _policySettingsOptions.GameRecordRetryCount,
-            retryAttempt => TimeSpan.FromSeconds(_policySettingsOptions.GameRecordRetryWaitSec),
-            onRetry: (response, retryTime, context) =>
-            {
-                logger.LogWarning("LogOn:{logOn} | Message:拉單過於頻繁(兩次拉單時間間隔必須大於 10 秒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString());
-            });
+	public async IAsyncEnumerable<GameRecordInfo> GameRecordAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var retryPolicy = Policy
+			.HandleResult<JsonNode>(jsonNode => jsonNode["d"]!["code"]!.GetValue<int>() == 43)
+			.WaitAndRetryAsync(
+			retryCount: _policySettingsOptions.GameRecordRetryCount,
+			retryAttempt => TimeSpan.FromSeconds(_policySettingsOptions.GameRecordRetryWaitSec),
+			onRetry: (response, retryTime, context) => logger.LogWarning("LogOn:{logOn} | Message:拉單過於頻繁(兩次拉單時間間隔必須大於 10 秒 | Json:{jsonNode}", DateTime.Now.ToString("o"), response.Result.ToJsonString()));
 
-        var data = $"s=6&startTime={startTime.ToUnixTimeMilliseconds()}&endTime={endTime.ToUnixTimeMilliseconds()}";
-        var jsonNode = await retryPolicy
-            .ExecuteAsync(
-            async () => await GetAsync(
-                apiUrl: apiUrl,
-                logPrefix: "QueryGameOrder",
-                deskey: deskey,
-                md5key: md5key,
-                agentId: agentId,
-                data: data,
-                cancellationToken: cancellationToken)
-            .ConfigureAwait(false))
-            .ConfigureAwait(false);
+		var data = $"s=6&startTime={startTime.ToUnixTimeMilliseconds()}&endTime={endTime.ToUnixTimeMilliseconds()}";
+		var jsonNode = await retryPolicy
+			.ExecuteAsync(
+			async () => await GetAsync(
+				apiUrl: apiUrl,
+				logPrefix: "QueryGameOrder",
+				deskey: deskey,
+				md5key: md5key,
+				agentId: agentId,
+				data: data,
+				cancellationToken: cancellationToken)
+			.ConfigureAwait(false))
+			.ConfigureAwait(false);
 
-        var dataResponse = jsonNode["d"]!;
+		var dataResponse = jsonNode["d"]!;
 
-        if (dataResponse["code"]!.GetValue<int>() != 0)
-        {
-            if (dataResponse["code"]!.GetValue<int>() is 16 or 43)
-            {
-                yield break;
-            }
-            throw new ReturnCodeException(dataResponse["code"]!.GetValue<int>());
-        }
+		if (dataResponse["code"]!.GetValue<int>() != 0)
+		{
+			if (dataResponse["code"]!.GetValue<int>() is 16 or 43)
+			{
+				yield break;
+			}
 
-        var list = dataResponse["list"];
+			throw new ReturnCodeException(dataResponse["code"]!.GetValue<int>());
+		}
 
-        if (list is null)
-        {
-            yield break;
-        }
+		var list = dataResponse["list"];
 
-        var gameIds = list["GameID"]!.AsArray().Select(x => x!.ToString());
-        var accounts = list["Accounts"]!.AsArray().Select(x => x!.ToString());
-        var serverIds = list["ServerID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
-        var kindIds = list["KindID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
-        var tableIds = list["TableID"]!.AsArray().Select(x => Convert.ToInt64(x!.ToString()));
-        var chairIds = list["ChairID"]!.AsArray().Select(x => (Convert.IsDBNull(x)) ? (int?)null : Convert.ToInt32(x!.ToString()));
-        var userCount = list["UserCount"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
-        var cellScores = list["CellScore"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
-        var allBets = list["AllBet"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
-        var profits = list["Profit"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
-        var revenues = list["Revenue"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
-        var gameStartTimes = list["GameStartTime"]!.AsArray().Select(x => x!.ToString().StringConvertDateTimeOffset());
-        var gameEndTimes = list["GameEndTime"]!.AsArray().Select(x => x!.ToString().StringConvertDateTimeOffset());
-        var cardValues = list["CardValue"]!.AsArray().Select(x => (x is null) ? string.Empty : x!.ToString());
-        var channelIDs = list["ChannelID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
-        var lineCodes = list["LineCode"]!.AsArray().Select(x => x!.ToString());
+		if (list is null)
+		{
+			yield break;
+		}
 
-        foreach (var it in gameIds.Select((e, i) => new { Value = e, Index = i }))
-        {
-            yield return new GameRecordInfo(
-                GameID: it.Value,
-                Account: accounts.ElementAt(it.Index).Replace($"{agentId}_", string.Empty),
-                ServerID: serverIds.ElementAt(it.Index),
-                KindID: kindIds.ElementAt(it.Index),
-                TableID: tableIds.ElementAt(it.Index),
-                ChairID: chairIds.ElementAt(it.Index),
-                UserCount: userCount.ElementAt(it.Index),
-                CellScore: cellScores.ElementAt(it.Index),
-                AllBet: allBets.ElementAt(it.Index),
-                Profit: profits.ElementAt(it.Index),
-                Revenue: revenues.ElementAt(it.Index),
-                GameStartTime: gameStartTimes.ElementAt(it.Index),
-                GameEndTime: gameEndTimes.ElementAt(it.Index),
-                CardValue: cardValues.ElementAt(it.Index),
-                ChannelID: channelIDs.ElementAt(it.Index),
-                LineCode: lineCodes.ElementAt(it.Index),
-                AdditionalData: new JsonObject
-                {
-                    ["GameID"] = it.Value,
-                    ["Accounts"] = accounts.ElementAt(it.Index),
-                    ["ServerID"] = serverIds.ElementAt(it.Index),
-                    ["KindID"] = kindIds.ElementAt(it.Index),
-                    ["TableID"] = tableIds.ElementAt(it.Index),
-                    ["ChairID"] = chairIds.ElementAt(it.Index),
-                    ["UserCount"] = userCount.ElementAt(it.Index),
-                    ["CellScore"] = cellScores.ElementAt(it.Index),
-                    ["AllBet"] = allBets.ElementAt(it.Index),
-                    ["Profit"] = profits.ElementAt(it.Index),
-                    ["Revenue"] = revenues.ElementAt(it.Index),
-                    ["GameStartTime"] = gameStartTimes.ElementAt(it.Index),
-                    ["GameEndTime"] = gameEndTimes.ElementAt(it.Index),
-                    ["CardValue"] = cardValues.ElementAt(it.Index),
-                    ["ChannelID"] = channelIDs.ElementAt(it.Index),
-                    ["LineCode"] = lineCodes.ElementAt(it.Index)
-                }.ToJsonString());
-        }
-    }
+		var gameIds = list["GameID"]!.AsArray().Select(x => x!.ToString());
+		var accounts = list["Accounts"]!.AsArray().Select(x => x!.ToString());
+		var serverIds = list["ServerID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
+		var kindIds = list["KindID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
+		var tableIds = list["TableID"]!.AsArray().Select(x => Convert.ToInt64(x!.ToString()));
+		var chairIds = list["ChairID"]!.AsArray().Select(x => Convert.IsDBNull(x) ? (int?)null : Convert.ToInt32(x!.ToString()));
+		var userCount = list["UserCount"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
+		var cellScores = list["CellScore"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
+		var allBets = list["AllBet"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
+		var profits = list["Profit"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
+		var revenues = list["Revenue"]!.AsArray().Select(x => Convert.ToDecimal(x!.ToString()));
+		var gameStartTimes = list["GameStartTime"]!.AsArray().Select(x => x!.ToString().StringConvertDateTimeOffset());
+		var gameEndTimes = list["GameEndTime"]!.AsArray().Select(x => x!.ToString().StringConvertDateTimeOffset());
+		var cardValues = list["CardValue"]!.AsArray().Select(x => (x is null) ? string.Empty : x!.ToString());
+		var channelIDs = list["ChannelID"]!.AsArray().Select(x => Convert.ToInt32(x!.ToString()));
+		var lineCodes = list["LineCode"]!.AsArray().Select(x => x!.ToString());
 
-    private async ValueTask<JsonNode> GetAsync(Uri apiUrl, string logPrefix, string deskey, string md5key, string agentId, string data, CancellationToken cancellationToken = default)
-    {
-        var timestamp = systemClock.CurrentTime.ToUnixTimeMilliseconds();
-        var uriBuilder = new UriBuilder(new Uri(apiUrl, "/getRecordHandle"));
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        query["agent"] = agentId;
-        query["timestamp"] = timestamp.ToString();
-        query["param"] = await cryptography
-            .GetAesEncryptAsync(
-            data: data,
-            secretKey: deskey,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-        query["key"] = cryptography.GetHash($"{agentId}{timestamp}{md5key}");
-        uriBuilder.Query = query.ToString();
+		foreach (var it in gameIds.Select((e, i) => new { Value = e, Index = i }))
+		{
+			yield return new GameRecordInfo(
+				GameID: it.Value,
+				Account: accounts.ElementAt(it.Index).Replace($"{agentId}_", string.Empty),
+				ServerID: serverIds.ElementAt(it.Index),
+				KindID: kindIds.ElementAt(it.Index),
+				TableID: tableIds.ElementAt(it.Index),
+				ChairID: chairIds.ElementAt(it.Index),
+				UserCount: userCount.ElementAt(it.Index),
+				CellScore: cellScores.ElementAt(it.Index),
+				AllBet: allBets.ElementAt(it.Index),
+				Profit: profits.ElementAt(it.Index),
+				Revenue: revenues.ElementAt(it.Index),
+				GameStartTime: gameStartTimes.ElementAt(it.Index),
+				GameEndTime: gameEndTimes.ElementAt(it.Index),
+				CardValue: cardValues.ElementAt(it.Index),
+				ChannelID: channelIDs.ElementAt(it.Index),
+				LineCode: lineCodes.ElementAt(it.Index),
+				AdditionalData: new JsonObject
+				{
+					["GameID"] = it.Value,
+					["Accounts"] = accounts.ElementAt(it.Index),
+					["ServerID"] = serverIds.ElementAt(it.Index),
+					["KindID"] = kindIds.ElementAt(it.Index),
+					["TableID"] = tableIds.ElementAt(it.Index),
+					["ChairID"] = chairIds.ElementAt(it.Index),
+					["UserCount"] = userCount.ElementAt(it.Index),
+					["CellScore"] = cellScores.ElementAt(it.Index),
+					["AllBet"] = allBets.ElementAt(it.Index),
+					["Profit"] = profits.ElementAt(it.Index),
+					["Revenue"] = revenues.ElementAt(it.Index),
+					["GameStartTime"] = gameStartTimes.ElementAt(it.Index),
+					["GameEndTime"] = gameEndTimes.ElementAt(it.Index),
+					["CardValue"] = cardValues.ElementAt(it.Index),
+					["ChannelID"] = channelIDs.ElementAt(it.Index),
+					["LineCode"] = lineCodes.ElementAt(it.Index)
+				}.ToJsonString());
+		}
+	}
 
-        logPrefix = $"{nameof(GameApiClient)}.{logPrefix}";
+	private async ValueTask<JsonNode> GetAsync(Uri apiUrl, string logPrefix, string deskey, string md5key, string agentId, string data, CancellationToken cancellationToken = default)
+	{
+		var timestamp = systemClock.CurrentTime.ToUnixTimeMilliseconds();
+		var uriBuilder = new UriBuilder(new Uri(apiUrl, "/getRecordHandle"));
+		var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+		query["agent"] = agentId;
+		query["timestamp"] = timestamp.ToString();
+		query["param"] = await cryptography
+			.GetAesEncryptAsync(
+			data: data,
+			secretKey: deskey,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+		query["key"] = cryptography.GetHash($"{agentId}{timestamp}{md5key}");
+		uriBuilder.Query = query.ToString();
 
-        var sw = Stopwatch.StartNew();
+		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}";
 
-        var httpResponseMessage = await client
-            .GetAsync(
-                requestUri: uriBuilder.ToString(),
-                cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+		var sw = Stopwatch.StartNew();
 
-        sw.Stop();
+		var httpResponseMessage = await client
+			.GetAsync(
+				requestUri: uriBuilder.ToString(),
+				cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        var responseMessage = default(string);
-        using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
-        {
-            responseMessage = await sr
-                .ReadToEndAsync(
-                    cancellationToken: cancellationToken)
-                ?? string.Empty;
-        }
+		sw.Stop();
 
-        var logEvent = new GameApiLogEvent
-        {
-            Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
-            Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,
-            Prefix = logPrefix,
-            ServerName = Environment.MachineName.NoLongerThan(128),
-            RequestHeaders = httpResponseMessage.RequestMessage?.Headers + httpResponseMessage.RequestMessage?.Content?.Headers?.ToString(),
-            RequestContent = data.NoLongerThan(4096),
-            ResponseHeaders = httpResponseMessage.Headers.ToString(),
-            ResponseContent = responseMessage.NoLongerThan(4096),
-            ResponseCode = (short)httpResponseMessage.StatusCode,
-            ExecutionTimeMs = (int)sw.ElapsedMilliseconds,
-            RecordedOn = DateTimeOffset.UtcNow
-        };
+		var responseMessage = default(string);
+		using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
+		{
+			responseMessage = await sr.ReadToEndAsync(cancellationToken: cancellationToken).ConfigureAwait(false) ?? string.Empty;
+		}
 
-        logger.LogInformation("{logEvent}", JsonSerializer.Serialize(logEvent));
+		var logEvent = new GameApiLogEvent
+		{
+			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
+			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,
+			Prefix = logPrefix,
+			ServerName = Environment.MachineName.NoLongerThan(128),
+			RequestHeaders = httpResponseMessage.RequestMessage?.Headers + httpResponseMessage.RequestMessage?.Content?.Headers?.ToString(),
+			RequestContent = data.NoLongerThan(4096),
+			ResponseHeaders = httpResponseMessage.Headers.ToString(),
+			ResponseContent = responseMessage.NoLongerThan(4096),
+			ResponseCode = (short)httpResponseMessage.StatusCode,
+			ExecutionTimeMs = (int)sw.ElapsedMilliseconds,
+			RecordedOn = DateTimeOffset.UtcNow
+		};
 
-        _ = httpResponseMessage.EnsureSuccessStatusCode();
+		logger.LogInformation("{logEvent}", JsonSerializer.Serialize(logEvent));
 
-        return string.IsNullOrEmpty(responseMessage)
-            ? throw new Exception("Game provider response content is empty.")
-            : JsonNode.Parse(responseMessage)!;
-    }
+		_ = httpResponseMessage.EnsureSuccessStatusCode();
+
+		return string.IsNullOrEmpty(responseMessage)
+			? throw new Exception("Game provider response content is empty.")
+			: JsonNode.Parse(responseMessage)!;
+	}
 }

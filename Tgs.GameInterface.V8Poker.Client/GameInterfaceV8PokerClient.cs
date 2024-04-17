@@ -5,182 +5,182 @@ using Tgs.GameInterface.V8Poker.Protos;
 namespace Tgs.GameInterface.V8Poker.Client;
 
 internal class GameInterfaceV8PokerClient(
-    GameInterfaceV8Poker.GameInterfaceV8PokerClient client) : IGameInterfaceV8PokerClient
+	GameInterfaceV8Poker.GameInterfaceV8PokerClient client) : IGameInterfaceV8PokerClient
 {
-    public async ValueTask<AgentBalanceReply> AgentBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, CancellationToken cancellationToken = default)
-    {
-        var request = new AgentBalanceRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId
-        };
+	public async ValueTask<AgentBalanceReply> AgentBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, CancellationToken cancellationToken = default)
+	{
+		var request = new AgentBalanceRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId
+		};
 
-        return await client.AgentBalanceAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-    }
+		return await client.AgentBalanceAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+	}
 
-    public async ValueTask<string> CheckingServiceAsync(string machineName, CancellationToken cancellationToken = default)
-    {
-        var request = new CheckingServiceRequest
-        {
-            MachineName = machineName,
-        };
+	public async ValueTask<string> CheckingServiceAsync(string machineName, CancellationToken cancellationToken = default)
+	{
+		var request = new CheckingServiceRequest
+		{
+			MachineName = machineName,
+		};
 
-        var reply = await client
-            .CheckingServiceAsync(
-                request: request,
-                cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+		var reply = await client
+			.CheckingServiceAsync(
+				request: request,
+				cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        return reply.MachineName;
-    }
+		return reply.MachineName;
+	}
 
-    public async ValueTask<FundReply> FundInAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, string orderId, decimal amount, CancellationToken cancellationToken = default)
-    {
-        var request = new FundRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            OrderId = orderId,
-            PlayerCode = playerCode,
-            Amount = amount
-        };
+	public async ValueTask<FundReply> FundInAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, string orderId, decimal amount, CancellationToken cancellationToken = default)
+	{
+		var request = new FundRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			OrderId = orderId,
+			PlayerCode = playerCode,
+			Amount = amount
+		};
 
-        return await client.FundInAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-    }
+		return await client.FundInAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+	}
 
-    public async ValueTask<FundReply> FundOutAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, string orderId, decimal amount, CancellationToken cancellationToken = default)
-    {
-        var request = new FundRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            PlayerCode = playerCode,
-            OrderId = orderId,
-            Amount = amount
-        };
+	public async ValueTask<FundReply> FundOutAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, string orderId, decimal amount, CancellationToken cancellationToken = default)
+	{
+		var request = new FundRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			PlayerCode = playerCode,
+			OrderId = orderId,
+			Amount = amount
+		};
 
-        return await client.FundOutAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-    }
+		return await client.FundOutAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+	}
 
-    public async ValueTask<bool> FundStatusAsync(Uri apiUrl, string deskey, string md5key, string agentId, string orderId, CancellationToken cancellationToken = default)
-    {
-        var request = new FundStatusRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            OrderId = orderId,
-        };
+	public async ValueTask<bool> FundStatusAsync(Uri apiUrl, string deskey, string md5key, string agentId, string orderId, CancellationToken cancellationToken = default)
+	{
+		var request = new FundStatusRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			OrderId = orderId,
+		};
 
-        var reply = await client.FundStatusAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+		var reply = await client.FundStatusAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        return reply.State;
-    }
+		return reply.State;
+	}
 
-    public async IAsyncEnumerable<GameWagerInfo> GameWagerAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        var request = new GameWagerRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            StartTime = startTime.ToTimestamp(),
-            EndTime = endTime.ToTimestamp()
-        };
+	public async IAsyncEnumerable<GameWagerInfo> GameWagerAsync(Uri apiUrl, string deskey, string md5key, string agentId, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var request = new GameWagerRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			StartTime = startTime.ToTimestamp(),
+			EndTime = endTime.ToTimestamp()
+		};
 
-        var reply = await client.GameWagerAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+		var reply = await client.GameWagerAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        var infos = reply.Items
-            ?? Enumerable.Empty<GameWagerInfo>();
+		var infos = reply.Items
+			?? Enumerable.Empty<GameWagerInfo>();
 
-        if (!infos.Any())
-        {
-            yield break;
-        }
+		if (!infos.Any())
+		{
+			yield break;
+		}
 
-        foreach (var info in infos)
-        {
-            yield return info;
-        }
-    }
+		foreach (var info in infos)
+		{
+			yield return info;
+		}
+	}
 
-    public async ValueTask<string> GameUrlAsync(Uri apiUrl, string deskey, string md5key, string agentId, string brandCode, string playerCode, string ipAddress, string externalGameId, string lang, CancellationToken cancellationToken = default)
-    {
-        var request = new GameUrlRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            BrandCode = brandCode,
-            PlayerCode = playerCode,
-            IpAddress = ipAddress,
-            ExternalGameId = externalGameId,
-            Lang = lang
-        };
+	public async ValueTask<string> GameUrlAsync(Uri apiUrl, string deskey, string md5key, string agentId, string brandCode, string playerCode, string ipAddress, string externalGameId, string lang, CancellationToken cancellationToken = default)
+	{
+		var request = new GameUrlRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			BrandCode = brandCode,
+			PlayerCode = playerCode,
+			IpAddress = ipAddress,
+			ExternalGameId = externalGameId,
+			Lang = lang
+		};
 
-        var reply = await client.GameUrlAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+		var reply = await client.GameUrlAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        return reply.GameUrl.ToString();
-    }
+		return reply.GameUrl.ToString();
+	}
 
-    public async ValueTask<PlayerBalanceReply> PlayerBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default)
-    {
-        var request = new PlayerBalanceRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            PlayerCode = playerCode
-        };
+	public async ValueTask<PlayerBalanceReply> PlayerBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default)
+	{
+		var request = new PlayerBalanceRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			PlayerCode = playerCode
+		};
 
-        return await client.PlayerBalanceAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-    }
+		return await client.PlayerBalanceAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+	}
 
-    public async ValueTask PlayerLogoutAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default)
-    {
-        var request = new PlayerLogoutRequest
-        {
-            ApiUrl = apiUrl.ToString(),
-            Deskey = deskey,
-            MD5Key = md5key,
-            AgentId = agentId,
-            PlayerCode = playerCode
-        };
+	public async ValueTask PlayerLogoutAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default)
+	{
+		var request = new PlayerLogoutRequest
+		{
+			ApiUrl = apiUrl.ToString(),
+			Deskey = deskey,
+			MD5Key = md5key,
+			AgentId = agentId,
+			PlayerCode = playerCode
+		};
 
-        _ = await client.PlayerLogoutAsync(
-            request: request,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-    }
+		_ = await client.PlayerLogoutAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+	}
 }

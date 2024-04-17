@@ -2,5 +2,5 @@
 
 public class GameInterfaceV8PokerClientOptions
 {
-    public Uri BaseUrl { get; set; } = default!;
+	public Uri BaseUrl { get; set; } = default!;
 }
