@@ -13,7 +13,7 @@ namespace Tgs.GameInterface.V8Poker.Core.UnitTest;
 public record DepositUnitTest
 {
 	[Fact]
-	public async void Normal_Process()
+	public async Task Normal_Process()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -98,7 +98,7 @@ public record DepositUnitTest
 	}
 
 	[Fact]
-	public async void Code_Is_39()
+	public async Task Code_Is_39()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{

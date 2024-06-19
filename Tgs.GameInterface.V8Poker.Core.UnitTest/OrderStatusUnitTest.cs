@@ -13,7 +13,7 @@ namespace Tgs.GameInterface.V8Poker.Core.UnitTest;
 public class OrderStatusUnitTest
 {
 	[Fact]
-	public async void Normal_Process()
+	public async Task Normal_Process()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -95,7 +95,7 @@ public class OrderStatusUnitTest
 	}
 
 	[Fact]
-	public async void Order_Does_Not_Exist()
+	public async Task Order_Does_Not_Exist()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
