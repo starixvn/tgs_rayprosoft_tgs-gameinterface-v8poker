@@ -13,7 +13,7 @@ namespace Tgs.GameInterface.V8Poker.Core.UnitTest;
 public class BalanceUnitTest
 {
 	[Fact]
-	public async void Normal_Process()
+	public async Task Normal_Process()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{

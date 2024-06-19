@@ -14,7 +14,7 @@ namespace Tgs.GameInterface.V8Poker.Core.UnitTest;
 public class GameRecordUnitTest
 {
 	[Fact]
-	public async void Normal_Process()
+	public async Task Normal_Process()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -185,7 +185,7 @@ public class GameRecordUnitTest
 	}
 
 	[Fact]
-	public async void Data_Does_Not_Exist_Code_16()
+	public async Task Data_Does_Not_Exist_Code_16()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -272,7 +272,7 @@ public class GameRecordUnitTest
 	}
 
 	[Fact]
-	public async void Pulling_Orders_Too_Frequently_Coode_43()
+	public async Task Pulling_Orders_Too_Frequently_Coode_43()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -355,7 +355,7 @@ public class GameRecordUnitTest
 	}
 
 	[Fact]
-	public async void Fishing()
+	public async Task Fishing()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{
@@ -510,7 +510,7 @@ public class GameRecordUnitTest
 	}
 
 	[Fact]
-	public async void TableID_Is_Long()
+	public async Task TableID_Is_Long()
 	{
 		var policySettingsOptions = Options.Create(new PolicySettingsOptions
 		{

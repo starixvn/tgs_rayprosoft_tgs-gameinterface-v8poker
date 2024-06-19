@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client.Balancer;
 using Grpc.Net.Client.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Tgs.GameInterface.V8Poker.Client;
 using Tgs.GameInterface.V8Poker.Protos;
@@ -74,7 +75,7 @@ public static class ServiceCollectionExtensions
 		if (isDns)
 		{
 			//負載平衡時，效能很重要。 藉由快取位址，解析位址的延遲會從 gRPC 呼叫中排除。 進行第一個 gRPC 呼叫時，將會叫用解析程式，而後續的呼叫會使用快取。
-			_ = services.AddSingleton<ResolverFactory>(sp => new DnsResolverFactory(refreshInterval: TimeSpan.FromSeconds(30)));
+			services.TryAddSingleton<ResolverFactory>(sp => new DnsResolverFactory(refreshInterval: TimeSpan.FromSeconds(30)));
 		}
 
 		return services;
