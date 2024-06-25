@@ -25,7 +25,7 @@ internal class GameApiClient(
 		var data = $"s=7&account={account}";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "Balance",
+			logPrefix: nameof(BalanceAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -56,7 +56,7 @@ internal class GameApiClient(
 			.ExecuteAsync(
 			async () => await GetAsync(
 				apiUrl: apiUrl,
-				logPrefix: "Deposit",
+				logPrefix: nameof(DepositAsync),
 				deskey: deskey,
 				md5key: md5key,
 				agentId: agentId,
@@ -78,7 +78,7 @@ internal class GameApiClient(
 		var data = $"s=0&account={account}&money=0&orderid={orderId}&ip={ipAddress}&lineCode={lineCode}&KindID={kindId}";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "Login",
+			logPrefix: nameof(LoginAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -97,7 +97,7 @@ internal class GameApiClient(
 		var data = $"s=8&account={account}";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "KickingPlayerOff",
+			logPrefix: nameof(LogoutAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -117,7 +117,7 @@ internal class GameApiClient(
 		var data = $"s=4&&orderid={orderId}";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "GetOrder",
+			logPrefix: nameof(GetOrderAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -138,7 +138,7 @@ internal class GameApiClient(
 		var data = $"s=3&account={account}&money={money}&orderid={orderId}";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "Withdraw",
+			logPrefix: nameof(WithdrawAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -158,7 +158,7 @@ internal class GameApiClient(
 		var data = $"s=14";
 		var jsonNode = await GetAsync(
 			apiUrl: apiUrl,
-			logPrefix: "AgentBalance",
+			logPrefix: nameof(AgentBalanceAsync),
 			deskey: deskey,
 			md5key: md5key,
 			agentId: agentId,
@@ -171,6 +171,25 @@ internal class GameApiClient(
 		return dataResponse["code"]!.GetValue<int>() != 0
 			? throw new ReturnCodeException(dataResponse["code"]!.GetValue<int>())
 			: decimal.Parse(jsonNode["d"]!["money"]!.ToString());
+	}
+
+	public async ValueTask<bool> PlayerOnlineAsync(Uri apiUrl, string deskey, string md5key, string agentId, string account, CancellationToken cancellationToken = default)
+	{
+		var data = $"s=5&account={account}";
+		var jsonNode = await GetAsync(
+			apiUrl: apiUrl,
+			logPrefix: nameof(PlayerOnlineAsync),
+			deskey: deskey,
+			md5key: md5key,
+			agentId: agentId,
+			data: data,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+
+		var dataResponse = jsonNode["d"]!;
+		return dataResponse["code"]!.GetValue<int>() != 0
+			? throw new ReturnCodeException(dataResponse["code"]!.GetValue<int>())
+			: dataResponse["status"]!.GetValue<int>() == 1;
 	}
 
 	private async ValueTask<JsonNode> GetAsync(Uri apiUrl, string logPrefix, string deskey, string md5key, string agentId, string data, CancellationToken cancellationToken = default)
@@ -189,8 +208,6 @@ internal class GameApiClient(
 		query["key"] = cryptography.GetHash($"{agentId}{timestamp}{md5key}");
 		uriBuilder.Query = query.ToString();
 
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}";
-
 		var sw = Stopwatch.StartNew();
 
 		var httpResponseMessage = await client
@@ -207,7 +224,7 @@ internal class GameApiClient(
 			responseMessage = await sr.ReadToEndAsync(cancellationToken: cancellationToken).ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var logEvent = new GameApiLogEvent
+		var logEvent = new
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,

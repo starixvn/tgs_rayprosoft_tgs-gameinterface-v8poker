@@ -20,5 +20,7 @@ public interface IGameInterfaceV8PokerClient
 
 	ValueTask<PlayerBalanceReply> PlayerBalanceAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default);
 
+	ValueTask<bool> PlayerOnlineAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default);
+
 	ValueTask PlayerLogoutAsync(Uri apiUrl, string deskey, string md5key, string agentId, string playerCode, CancellationToken cancellationToken = default);
 }

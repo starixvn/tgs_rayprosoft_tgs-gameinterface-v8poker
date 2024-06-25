@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Authors>Raypro</Authors>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-v8poker</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-v8poker.git</RepositoryUrl>
@@ -26,12 +26,16 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="PhoenixToolkits.NuGet.BuildTools" Version="0.0.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="PhoenixToolkits.Protobuf.ExtendTypes" Version="0.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="..\Tgs.GameInterface.V8Poker\Protos\gameinterfacev8poker.proto">
-			<Link>gameinterfacev8poker.proto</Link>
-		</Protobuf>
+	  <ProjectReference Include="..\Tgs.GameInterface.V8Poker.Protos\Tgs.GameInterface.V8Poker.Protos.csproj">
+	    <PrivateAssets>all</PrivateAssets>
+	  </ProjectReference>
 	</ItemGroup>
 </Project>

@@ -35,7 +35,7 @@ internal class GameRecordApiClient(
 			.ExecuteAsync(
 			async () => await GetAsync(
 				apiUrl: apiUrl,
-				logPrefix: "QueryGameOrder",
+				logPrefix: nameof(GameRecordAsync),
 				deskey: deskey,
 				md5key: md5key,
 				agentId: agentId,
@@ -137,8 +137,6 @@ internal class GameRecordApiClient(
 		query["key"] = cryptography.GetHash($"{agentId}{timestamp}{md5key}");
 		uriBuilder.Query = query.ToString();
 
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}";
-
 		var sw = Stopwatch.StartNew();
 
 		var httpResponseMessage = await client
@@ -155,7 +153,7 @@ internal class GameRecordApiClient(
 			responseMessage = await sr.ReadToEndAsync(cancellationToken: cancellationToken).ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var logEvent = new GameApiLogEvent
+		var logEvent = new
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,

@@ -14,6 +14,7 @@ public class GameInterfaceV8PokerGrpcService(
 	IQueryService<GameWagerQuery, GameWagerResult> gameWagerService,
 	IGetService<GameUrlQuery, string> gameUrlService,
 	IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
+	IGetService<PlayerOnlineQuery, bool> playerOnlineService,
 	ICommandService<PlayerLogoutCommand> playerLogoutService,
 	IGetService<AgentBalanceQuery, AgentBalanceResult> agentBalanceService) : GameInterfaceV8Poker.GameInterfaceV8PokerBase
 {
@@ -223,6 +224,26 @@ public class GameInterfaceV8PokerGrpcService(
 		return new BaseReply
 		{
 			State = true
+		};
+	}
+
+	public override async Task<PlayerOnlineReply> PlayerOnline(PlayerOnlineRequest request, ServerCallContext context)
+	{
+		var query = new PlayerOnlineQuery(
+			ApiUrl: new(request.ApiUrl),
+			Deskey: request.Deskey,
+			MD5key: request.MD5Key,
+			AgentId: request.AgentId,
+			PlayerCode: request.PlayerCode);
+
+		var result = await playerOnlineService.GetAsync(
+			query: query,
+			cancellationToken: context.CancellationToken)
+			.ConfigureAwait(false);
+
+		return new PlayerOnlineReply
+		{
+			Online = result
 		};
 	}
 }
