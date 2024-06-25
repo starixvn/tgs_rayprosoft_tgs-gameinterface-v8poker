@@ -5,13 +5,14 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Tgs.GameInterface.V8Poker.Protos";
 
-package gameinterfacev8poker;
+package GameInterfaceV8Poker;
 
 // The greeting service definition.
 service GameInterfaceV8Poker {
   // Sends a greeting
   rpc PlayerBalance (PlayerBalanceRequest) returns (PlayerBalanceReply);
   rpc PlayerLogout (PlayerLogoutRequest) returns (BaseReply);
+  rpc PlayerOnline (PlayerOnlineRequest) returns (PlayerOnlineReply);
   rpc FundIn (FundRequest) returns (FundReply);
   rpc FundOut (FundRequest) returns (FundReply);
   rpc FundStatus(FundStatusRequest) returns (BaseReply);
@@ -35,6 +36,14 @@ message AgentBalanceRequest {
 	string deskey = 2;
 	string m_d5key = 3;
 	string agent_id = 4;
+}
+
+message PlayerOnlineRequest {
+	string api_url = 1;
+	string deskey = 2;
+	string m_d5key = 3;
+	string agent_id = 4;
+	string player_code = 5;
 }
 
 message PlayerLogoutRequest {
@@ -127,6 +136,10 @@ message GameWagerInfo {
 	phoenix.protobuf.DecimalValue commission = 9;
 	phoenix.protobuf.DecimalValue win_loss = 10;
 	string additional_data = 11;
+}
+
+message PlayerOnlineReply {
+	bool online = 1;
 }
 
 message CheckingServiceReply{

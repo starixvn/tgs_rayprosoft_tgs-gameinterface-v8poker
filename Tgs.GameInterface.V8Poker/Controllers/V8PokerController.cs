@@ -299,6 +299,42 @@ public class V8PokerController : ControllerBase
 	}
 
 	/// <summary>
+	/// Players the online asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="source">The source.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     Post
+	///
+	///         {
+	///             "apiUrl": "https://wc-api.xpvcd046.com/",
+	///             "deskey": "C6995933499B163B",
+	///             "mD5key": "628DA8F1857A6529",
+	///             "agentId": "71033",
+	///             "playerCode":"4ue0uj8cwn2v"
+	///         }
+	/// </remarks>
+	[HttpPost("player/online", Name = "PlayerOnline")]
+	public ValueTask<bool> PlayerOnlineAsync(
+		[FromServices] IGetService<PlayerOnlineQuery, bool> service,
+		PlayerOnlineQuery source)
+	{
+		var query = new PlayerOnlineQuery(
+			ApiUrl: source.ApiUrl,
+			Deskey: source.Deskey,
+			MD5key: source.MD5key,
+			AgentId: source.AgentId,
+			PlayerCode: source.PlayerCode);
+
+		return service.GetAsync(
+			query: query,
+			cancellationToken: HttpContext.RequestAborted);
+	}
+
+	/// <summary>
 	/// Players the logout asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
@@ -334,6 +370,7 @@ public class V8PokerController : ControllerBase
 			command: command,
 			cancellationToken: HttpContext.RequestAborted);
 	}
+
 
 	/// <summary>
 	/// Agents the balance asynchronous.

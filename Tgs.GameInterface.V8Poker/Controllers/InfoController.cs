@@ -10,14 +10,13 @@ namespace Tgs.GameInterface.V8Poker.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class InfoController(
-	IConfiguration configuration,
-	IOptions<PolicySettingsOptions> options) : ControllerBase
+public class InfoController : ControllerBase
 {
-	private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
-
 	[HttpGet]
-	public async Task<object> GetAsync([FromServices] IWebHostEnvironment _hostingEnvironment)
+	public async Task<object> GetAsync(
+		[FromServices] IConfiguration configuration,
+		[FromServices] IWebHostEnvironment _hostingEnvironment,
+		[FromServices] IOptions<PolicySettingsOptions> policySettingsOptions)
 	{
 		var hostName = Dns.GetHostName();
 		var hostEntry = await Dns.GetHostEntryAsync(hostName).ConfigureAwait(false);
@@ -35,7 +34,7 @@ public class InfoController(
 			ProcessCount = Environment.ProcessorCount,
 			ReleaseNamespace = configuration.GetValue<string>("RELEASE_NAMESPACE"),
 			PodIPAddress = configuration.GetValue<string>("POD_IP"),
-			PolicySettingsOptions = _policySettingsOptions
+			PolicySettingsOptions = policySettingsOptions
 		};
 	}
 }

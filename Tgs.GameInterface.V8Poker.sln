@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.V8Poker.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.V8Poker.Core.UnitTest", "Tgs.GameInterface.V8Poker.Core.UnitTest\Tgs.GameInterface.V8Poker.Core.UnitTest.csproj", "{8833B5CE-9B51-4680-9424-BD1479CC48FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.V8Poker.Client", "Tgs.GameInterface.V8Poker.Client\Tgs.GameInterface.V8Poker.Client.csproj", "{BCD982EB-FA94-4984-95CE-E5C2F0B9BD51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.V8Poker.Client", "Tgs.GameInterface.V8Poker.Client\Tgs.GameInterface.V8Poker.Client.csproj", "{BCD982EB-FA94-4984-95CE-E5C2F0B9BD51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.V8Poker.Protos", "Tgs.GameInterface.V8Poker.Protos\Tgs.GameInterface.V8Poker.Protos.csproj", "{7F29BEE8-6809-43F6-80FC-30E8BC429B96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{BCD982EB-FA94-4984-95CE-E5C2F0B9BD51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCD982EB-FA94-4984-95CE-E5C2F0B9BD51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCD982EB-FA94-4984-95CE-E5C2F0B9BD51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F29BEE8-6809-43F6-80FC-30E8BC429B96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F29BEE8-6809-43F6-80FC-30E8BC429B96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F29BEE8-6809-43F6-80FC-30E8BC429B96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F29BEE8-6809-43F6-80FC-30E8BC429B96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
