@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
 						// The maximum number of call attempts,including the original attempt.(最大呼叫嘗試次數，包括原始嘗試。)
 						// This value is limited by GrpcChannelOptions.MaxRetryAttempts which defaults to 5.(該值受到限制，GrpcChannelOptions.MaxRetryAttempts默認為 5。)
 						// A value is required and must be greater than 1.(一個值是必需的，並且必須大於 1。)
-						MaxAttempts = 30,
+						MaxAttempts = 99,
 						// The initial backoff delay between retry attempts.(重試嘗試之間的初始退避延遲。)
 						// A randomized delay between 0 and the current backoff determines when the next retry attempt is made.(0 和當前退避之間的隨機延遲決定何時進行下一次重試。)
 						// After each attempt, the current backoff is multiplied by BackoffMultiplier.(每次嘗試後，當前退避都會乘以BackoffMultiplier。)
